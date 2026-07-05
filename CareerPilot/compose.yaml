@@ -1,0 +1,7 @@
+﻿services:
+  careerpilot:
+    image: careerpilot
+    build:
+      context: .
+      dockerfile: CareerPilot/Dockerfile
+
