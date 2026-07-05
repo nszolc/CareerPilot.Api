@@ -1,0 +1,62 @@
+# Build output
+bin/
+obj/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+*.DotSettings.user
+
+# Visual Studio / VS Code
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+
+# Test results / coverage
+TestResults/
+coverage/
+coverage.*/
+*.coverage
+*.coveragexml
+*.trx
+*.opencover.xml
+*.cobertura.xml
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.assets.json
+.nuget/
+
+# Logs
+*.log
+logs/
+
+# Environment / secrets
+.env
+.env.*
+*.local.json
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker local overrides
+docker-compose.override.yml

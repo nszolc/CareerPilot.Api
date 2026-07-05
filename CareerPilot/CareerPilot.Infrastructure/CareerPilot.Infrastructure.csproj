@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CareerPilot.Application\CareerPilot.Application.csproj" />
+      <ProjectReference Include="..\CareerPilot.Domain\CareerPilot.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Data\" />
+      <Folder Include="Services\" />
+    </ItemGroup>
+
+</Project>
