@@ -11,7 +11,8 @@ public class JobAd
     public string Company { get; set; } = string.Empty;
     public ApplicationStatus Status { get; set; } = ApplicationStatus.NotSent;
     public DateTime? AppliedAt { get; set; }
-    public DateTime Date { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string? Link { get; set; }
     public JobAdStatus JobAdStatus { get; set; } = JobAdStatus.Active;
+    public ICollection<JobInterview> Interviews { get; set; } = [];
 }
