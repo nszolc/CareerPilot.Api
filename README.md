@@ -11,15 +11,19 @@ This project was created as a portfolio application to practice backend developm
 
 The project is currently in development.
 
-Planned core version:
+Already working:
 
-* REST API for managing job offers and applications
-* SQL Server database with Entity Framework Core
+* Clean Architecture solution split into Api, Application, Domain, Infrastructure and Tests
+* Domain model with EF Core mapping and an initial migration
+* SQL Server running in Docker, with the API containerised next to it
+* Request DTOs and FluentValidation validators
+* Swagger UI served in the Development environment
+
+Still planned:
+
+* REST controllers (CRUD for job ads and applications) - the API currently exposes no endpoints
 * Azure SQL Database support
-* Clean Architecture structure
-* FluentValidation for request validation
-* Swagger documentation
-* Docker support for local development
+* Dashboard statistics
 
 ---
 
@@ -94,7 +98,7 @@ Planned dashboard statistics:
 ## Tech Stack
 
 * C#
-* .NET 9
+* .NET 10
 * ASP.NET Core Web API
 * Entity Framework Core
 * FluentValidation
@@ -104,6 +108,49 @@ Planned dashboard statistics:
 * Docker
 * Clean Architecture
 * SQL Server Management Studio
+
+---
+
+## Running Locally
+
+Requirements: Docker Desktop and the .NET 10 SDK (the latter only for running migrations from the host).
+
+### 1. Start the API and the database
+
+```bash
+cd CareerPilot
+docker compose up --build
+```
+
+This builds the API image and starts two containers:
+
+* `careerpilot` - the API, exposed on the host as **http://localhost:5219** (Swagger UI at `/swagger`)
+* `db` - SQL Server 2022, exposed on the host as **localhost,1433**
+
+The API waits for the database healthcheck before starting, so the first run takes a bit longer while SQL Server boots.
+Database files live in the named volume `sql_data`, so they survive `docker compose down`. Use `docker compose down -v` to wipe them.
+
+### 2. Apply the database migrations
+
+The containers only start the database - the schema is created by EF Core migrations, run from the host:
+
+```bash
+cd CareerPilot
+ASPNETCORE_ENVIRONMENT=Development dotnet ef database update \
+  --project CareerPilot.Infrastructure \
+  --startup-project CareerPilot.Api
+```
+
+On PowerShell, set the variable first: `$env:ASPNETCORE_ENVIRONMENT = 'Development'`.
+
+Two details worth knowing:
+
+* `--project` points at Infrastructure because that is where `AppDbContext` and the migrations live; `--startup-project` points at Api because that is where the context is registered and the configuration is read from.
+* `ASPNETCORE_ENVIRONMENT=Development` is required, because the connection string only exists in `appsettings.Development.json`.
+
+### Configuration
+
+The local SA password is kept as-is in `compose.yaml` and `appsettings.Development.json`. This is a deliberate trade-off for a portfolio project: the database is local, holds no real data, and a plain `docker compose up` keeps the repo easy to review. Before this project goes any further (deployment, real data, more than one developer), the password should move to a `.env` file next to `compose.yaml` - `.env` and `.env.*` are already gitignored.
 
 ---
 
@@ -134,41 +181,44 @@ Future Azure ideas:
 ```txt
 CareerPilot
 │
-├── CareerPilot.Api
-├── CareerPilot.Application
-├── CareerPilot.Domain
-├── CareerPilot.Infrastructure
-└── CareerPilot.Tests
+├── CareerPilot.Api             (controllers, DI setup, Dockerfile)
+├── CareerPilot.Application     (DTOs, FluentValidation validators)
+├── CareerPilot.Domain          (entities, enums)
+├── CareerPilot.Infrastructure  (AppDbContext, EF Core migrations)
+├── CareerPilot.Tests
+└── compose.yaml                (API + SQL Server for local development)
 ```
 
 ---
 
-## Example Domain Entities
+## Domain Entities
 
-Planned main entities:
+Currently implemented and mapped to the database:
 
 ```txt
-User
-Company
-JobOffer
-Application
-ApplicationStage
-Note
-Skill
-JobOfferSkill
+JobAd            - a saved job ad, with its application status and dates
+JobInterview     - an interview connected with a job ad
+EmployerMessage  - a message received from an employer
+ApplicationFile  - a reusable application material (CV, cover letter)
 ```
 
-Example relationships:
+Relationships:
 
-* one company can have many job offers
-* one job offer can have one application
-* one application can have many stages
-* one job offer can have many notes
-* one job offer can include many required skills
+* one job ad can have many interviews
+
+Enums:
+
+* `ApplicationStatus`: NotSent, Sent, JobInterview, Rejected, Accepted
+* `JobAdStatus`: Active, Archived
+* `ApplicationFileType`
+
+Note that the application status lives directly on `JobAd` - there is no separate `Application` entity. Companies, notes and skills are not modelled as entities yet.
 
 ---
 
 ## Example API Endpoints
+
+Planned - no controllers are implemented yet, so the running API currently serves only Swagger.
 
 ```http
 GET    /api/job-offers
@@ -192,15 +242,15 @@ GET    /api/dashboard/statistics
 
 ### Version 1 - MVP
 
-* [ ] Create Clean Architecture solution structure
-* [ ] Add core domain entities
-* [ ] Configure SQL Server database
-* [ ] Add Entity Framework Core migrations
+* [x] Create Clean Architecture solution structure
+* [x] Add core domain entities
+* [x] Configure SQL Server database (Docker + EF Core)
+* [x] Add Entity Framework Core migrations
+* [x] Add application statuses
+* [x] Add FluentValidation
+* [x] Add Swagger documentation
 * [ ] Create CRUD for job offers
 * [ ] Create CRUD for applications
-* [ ] Add application statuses
-* [ ] Add FluentValidation
-* [ ] Add Swagger documentation
 
 ### Version 2 - Azure SQL Database
 
@@ -233,4 +283,3 @@ Created by **Natalia Szolc** as a backend development portfolio project.
 
 GitHub: [github.com/nszolc](https://github.com/nszolc)
 Portfolio: [nszolc.dev](https://nszolc.dev)
-::: 
