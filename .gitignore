@@ -1,0 +1,6 @@
+# Rider / JetBrains
+# Katalog .idea powstaje w korzeniu repo, a CareerPilot/.gitignore go nie lapie -
+# jego reguly obowiazuja tylko od swojego katalogu w dol.
+.idea/
+*.sln.iml
+*.DotSettings.user

@@ -48,6 +48,9 @@ logs/
 .env.*
 *.local.json
 
+# Materialy osobiste (CV) - trzymane lokalnie, poza repo
+CareerPilot.Api/wwwroot/img/
+
 # Database files
 *.db
 *.sqlite
